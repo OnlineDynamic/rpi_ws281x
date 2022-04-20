@@ -5,7 +5,7 @@ Userspace Raspberry Pi library for controlling WS281X LEDs.
 This includes WS2812 and SK6812RGB RGB LEDs
 Preliminary support is now included for SK6812RGBW LEDs (yes, RGB + W)
 The LEDs can be controlled by either the PWM (2 independent channels)
-or PCM controller (1 channel) or the SPI interface (1 channel).
+or PCM controller (1 channel) or the SPI interface (1 channel) or the SMI interface (16 channel).
 
 ### Bindings:
 
@@ -63,6 +63,28 @@ SPI:
         See also note for RPi 3 below.
 ```
 
+SMI:
+```
+        SD0-SD17 can be used for SMI by putting the following GPIO's into ALT1 mode:
+        SD0 -> GPIO 8
+        SD1 -> GPIO 9
+        SD2 -> GPIO 10
+        SD3 -> GPIO 11
+        SD4 -> GPIO 12
+        SD5 -> GPIO 13
+        SD6 -> GPIO 14
+        SD7 -> GPIO 15
+        SD8 -> GPIO 16
+        SD9 -> GPIO 17
+        SD10 -> GPIO 18
+        SD11 -> GPIO 19
+        SD12 -> GPIO 20
+        SD13 -> GPIO 21
+        SD14 -> GPIO 22
+        SD15 -> GPIO 23
+        SD16 -> GPIO 24
+        SD17 -> GPIO 25
+```
 
 ### Power and voltage requirements
 
@@ -203,7 +225,11 @@ Do this by adding the following lines to /boot/config.txt and reboot:
 SPI requires you to be in the `gpio` group if you wish to control your LEDs
 without root.
 
-### Comparison PWM/PCM/SPI
+#### SMI
+
+Using SMI for a large number of GPIO channels will reduce other functionality so care needs to be taken around which pins to drive for your particular use case.
+
+### Comparison PWM/PCM/SPI/SMI
 
 Both PWM and PCM use DMA transfer to output the control signal for the LEDs.
 The max size of a DMA transfer is 65536 bytes. Since each LED needs 12 bytes
@@ -219,6 +245,7 @@ When controlling a LED string of 240 LEDs the CPU load on the original Pi 2 (BCM
   PWM  5%
   PCM  5%
   SPI  1%
+  SMI  tbc
 
 ### Usage:
 
