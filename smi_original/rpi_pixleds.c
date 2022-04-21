@@ -49,15 +49,18 @@
 
 #define TX_TEST         0   // If non-zero, use dummy Tx data
 #define LED_D0_PIN      8   // GPIO pin for D0 output
-#define LED_NCHANS      8   // Number of LED channels (8 or 16)
+#define LED_NCHANS      16   // Number of LED channels (8 or 16)
 #define LED_NBITS       24  // Number of data bits per LED
 #define LED_PREBITS     4   // Number of zero bits before LED data
 #define LED_POSTBITS    4   // Number of zero bits after LED data
 #define BIT_NPULSES     3   // Number of O/P pulses per LED bit
-#define CHAN_MAXLEDS    50  // Maximum number of LEDs per channel
+#define CHAN_MAXLEDS    1200  // Maximum number of LEDs per channel
 #define CHASE_MSEC      100 // Delay time for chaser light test
 #define REQUEST_THRESH  2   // DMA request threshold
 #define DMA_CHAN        10  // DMA channel to use
+
+// Array of GPIO pins in use for SMI (allowing UART TX on GPIO 14)
+int GPIO_SMI[16] = {8,9,10,11,12,13,15,16,17,18,19,20,21,22,23,24};
 
 // Length of data for 1 row (1 LED on each channel)
 #define LED_DLEN        (LED_NBITS * BIT_NPULSES)
@@ -303,7 +306,7 @@ void terminate(int sig)
     if (gpio_regs.virt)
     {
         for (i=0; i<LED_NCHANS; i++)
-            gpio_mode(LED_D0_PIN+i, GPIO_IN);
+            gpio_mode(GPIO_SMI[i], GPIO_IN);
     }
     if (smi_regs.virt)
         *REG32(smi_regs, SMI_CS) = 0;
@@ -355,7 +358,7 @@ void init_smi(int width, int ns, int setup, int strobe, int hold)
     smi_dmc->reqr = smi_dmc->reqw = REQUEST_THRESH;
     smi_dsr->rwidth = smi_dsw->wwidth = width;
     for (i=0; i<LED_NCHANS; i++)
-        gpio_mode(LED_D0_PIN+i, GPIO_ALT1);
+        gpio_mode(GPIO_SMI[i], GPIO_ALT1);
 }
 
 // Set up SMI transfers using DMA
